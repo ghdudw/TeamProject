@@ -127,6 +127,7 @@ void AMyPlayerController::ReadMyLevelDataFromOpcUa()
         MySwitch.DataType = TEXT("Boolean");
         MySwitch.ValueBool = *(bool*)valueMySwitch.data; // Boolean 값 할당
 
+        ListView->ClearListItems();
         UUListViewObject* ListItem2 = NewObject<UUListViewObject>();
         ListItem2->MySwitchStruct = MySwitch;
         ListItem2->StructType = 2;
@@ -152,6 +153,7 @@ void AMyPlayerController::ReadMyLevelDataFromOpcUa()
         EventId.DataType = TEXT("ByteString");
         EventId.ValueByteString = TArray<uint8>((uint8*)valueEventId.data, ((UA_ByteString*)valueEventId.data)->length); // ByteString 값 할당
 
+        ListView->ClearListItems();
         UUListViewObject* ListItem3 = NewObject<UUListViewObject>();
         ListItem3->EventIdStruct = EventId;
         ListItem3->StructType = 3;
@@ -176,6 +178,7 @@ void AMyPlayerController::ReadMyLevelDataFromOpcUa()
         ReceiveTime.DataType = TEXT("DateTime");
         ReceiveTime.ValueDateTime = *(FDateTime*)valueReceiveTime.data; // DateTime 값 할당
 
+        ListView->ClearListItems();
         UUListViewObject* ListItem4 = NewObject<UUListViewObject>();
         ListItem4->ReciveTimeStruct = ReceiveTime;
         ListItem4->StructType = 4;
@@ -200,6 +203,7 @@ void AMyPlayerController::ReadMyLevelDataFromOpcUa()
         Severity.DataType = TEXT("UInt16");
         Severity.ValueInt32 = *(uint16*)valueSeverity.data; // UInt16 값 할당 (int32로 변환)
 
+        ListView->ClearListItems();
         UUListViewObject* ListItem5 = NewObject<UUListViewObject>();
         ListItem5->SeverityStruct = Severity;
         ListItem5->StructType = 5;
