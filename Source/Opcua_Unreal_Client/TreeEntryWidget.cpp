@@ -2,18 +2,17 @@
 
 
 #include "TreeEntryWidget.h"
+#include "Components/TextBlock.h"
+#include "UTreeViewObject.h"
 
-void UTreeEntryWidget::OnItemSelected(UTreeViewObject* SelectedItem)
+void UTreeEntryWidget::NativeOnListItemObjectSet(UObject* ItemData)
 {
-    // 선택한 아이템의 데이터 처리
-    UE_LOG(LogTemp, Log, TEXT("Selected Item: %s"), *SelectedItem->Name);
-}
-
-TSharedRef<ITableRow> UTreeEntryWidget::OnGenerateRow(UTreeViewObject* InItem, const TSharedRef<STableViewBase>& OwnerTable)
-{
-    return SNew(STableRow<UTreeViewObject*>, OwnerTable)
-        [
-            SNew(STextBlock)
-                .Text(FText::FromString(InItem->Name))
-        ];
+    if (const UTreeViewObject* TreeItem = Cast<UTreeViewObject>(ItemData))
+    {
+        if (TreeItem)
+        {
+            TreeText_1->SetText(FText::FromString(TreeItem->Key));
+            TreeText_2->SetText(FText::FromString(TreeItem->Value));
+        }
+    }
 }

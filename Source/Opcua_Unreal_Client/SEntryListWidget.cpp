@@ -5,7 +5,6 @@
 #include "Components/TextBlock.h"
 #include "MyCustomStruct.h"
 #include "UListViewObject.h"
-#include <Misc/DefaultValueHelper.h>
 
 void USEntryListWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {

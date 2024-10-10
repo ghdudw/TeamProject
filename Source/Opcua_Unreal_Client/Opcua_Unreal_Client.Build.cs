@@ -34,7 +34,8 @@ public class Opcua_Unreal_Client : ModuleRules
             "CoreUObject",
             "Engine",
             "InputCore",
-            "Json", "JsonUtilities"
+            "Json", "JsonUtilities",
+            "TextureCompressor"
         });
 
         PrivateDependencyModuleNames.AddRange(

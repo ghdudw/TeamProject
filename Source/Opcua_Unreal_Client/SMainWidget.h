@@ -4,7 +4,7 @@
 #include "UListViewObject.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "MyCustomStruct.h"
+#include "Http.h"
 #include "SMainWidget.generated.h"
 /**
  * 
@@ -24,10 +24,6 @@ public:
 	void OnClickedOption();
 
 	void UpdateDateTime();
-
-	void LoadJsonData(FString JsonString);
-
-	void CreateTreeFromJson(TSharedPtr<FJsonObject> JsonObject);
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* home;
@@ -50,8 +46,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	class UListView* ListView;
 
-	UPROPERTY(meta = (BindWidget))
-	class UTreeView* MyTreeView;
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	class UTreeView* TreeView;
 
 	UFUNCTION(BlueprintCallable, Category = "DateTime")
 	FText GetCurrentDateTime() const;

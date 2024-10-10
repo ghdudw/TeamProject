@@ -12,6 +12,13 @@
 #include "SMainWidget.h"
 #include "SEntryListWidget.h"
 #include "Components/ListView.h"
+#include "HttpModule.h"
+#include "Http.h"
+#include "Json.h"
+#include "JsonUtilities.h"
+#include "UTreeViewObject.h"
+#include "Components/TreeView.h"
+#include "SMainWidget.h"
 
 
 
@@ -26,6 +33,7 @@ void AMyPlayerController::BeginPlay()
 {
     Super::BeginPlay();
     ConnectToOpcUaServer();
+    SendHttpRequest();
     UUserWidget* MyWidget = CreateWidget<UUserWidget>(this, WidgetClass);
 
     if (MyWidget)
@@ -33,8 +41,9 @@ void AMyPlayerController::BeginPlay()
         // 위젯을 화면에 추가
         MyWidget->AddToViewport();
         ListView = Cast<USMainWidget>(MyWidget)->ListView;
+        TreeView = Cast<USMainWidget>(MyWidget)->TreeView;
         // ListView가 올바르게 바인딩되었는지 확인
-        if (!ListView)
+        if (!TreeView)
         {
             UE_LOG(LogTemp, Warning, TEXT("MyListView is not bound."));
         }
@@ -228,5 +237,66 @@ void AMyPlayerController::SetFullscreenMode()
         // 설정 적용
         UserSettings->ApplySettings(false);
     }
+}
+
+void AMyPlayerController::SendHttpRequest()
+{
+    FHttpModule* Http = &FHttpModule::Get();
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = Http->CreateRequest();
+    Request->OnProcessRequestComplete().BindUObject(this, &AMyPlayerController::OnResponseReceived);
+    Request->SetURL("http://3.34.116.91:8401/gameResource.json");
+    Request->SetVerb("GET");
+    Request->SetHeader("Content-Type", "application/json");
+
+    Request->ProcessRequest();
+}
+
+void AMyPlayerController::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bWasSuccessful)
+{
+    if (bWasSuccessful && Response.IsValid())
+    {
+        FString ResponseString = Response->GetContentAsString();
+        UE_LOG(LogTemp, Log, TEXT("Response: %s"), *ResponseString);
+
+        TSharedPtr<FJsonObject> JsonObject;
+        TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(ResponseString);
+
+        if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
+        {
+            // "result" 배열을 가져옵니다.
+            const TArray<TSharedPtr<FJsonValue>>* ResultArray;
+            if (JsonObject->TryGetArrayField(TEXT("result"), ResultArray))
+            {
+                // 배열의 각 항목을 반복합니다.
+                for (const auto& Item : *ResultArray)
+                {
+                    TSharedPtr<FJsonObject> ItemObject = Item->AsObject();
+                    if (ItemObject.IsValid())
+                    {
+                        // 키와 값을 가져옵니다.
+                        UTreeViewObject* NewItem = NewObject<UTreeViewObject>();
+                        NewItem->Key = ItemObject->GetStringField(TEXT("Key"));
+                        NewItem->Value = ItemObject->GetStringField(TEXT("Value"));
+
+                        // 트리 뷰에 항목 추가
+                        TreeView->AddItem(NewItem);
+                    }
+                }
+            }
+            else
+            {
+                UE_LOG(LogTemp, Error, TEXT("Result array not found in JSON"));
+            }
+        }
+        else
+        {
+            UE_LOG(LogTemp, Error, TEXT("Failed to parse JSON"));
+        }
+    }
+    else
+    {
+        UE_LOG(LogTemp, Error, TEXT("HTTP Request Failed"));
+    }
+    TreeView->RequestRefresh();
 }
 

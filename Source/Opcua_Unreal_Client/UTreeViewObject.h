@@ -8,7 +8,7 @@
 /**
  * 
  */
-class OPCUA_UNREAL_CLIENT_API UTreeViewObject
+class OPCUA_UNREAL_CLIENT_API UTreeViewObject : public UObject
 {
 public:
     UPROPERTY()
@@ -18,7 +18,10 @@ public:
     TArray<UTreeViewObject*> Children;
 
     UPROPERTY()
-    FString Name; // 노드 이름
+    FString Key; // 노드 이름
+
+    UPROPERTY()
+    FString Value;
 
     UTreeViewObject()
     {
